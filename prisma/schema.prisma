@@ -14,36 +14,54 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Roles {
+model Role {
   id          Int    @id @default(autoincrement())
-  values      String @unique
+  value       String @unique
   description String
 
   owners RolesOnOwners[]
+
+  @@map("roles")
 }
 
 model Owner {
   id   Int    @id @default(autoincrement())
   name String
 
+  email String  @unique
+  phone String?
+
   roles RolesOnOwners[]
+  cats  Cat[]
+
+  @@map("owners")
 }
 
 model RolesOnOwners {
   owner    Owner @relation(fields: [owner_id], references: [id])
   owner_id Int
-  roles    Roles @relation(fields: [roles_id], references: [id])
+
+  roles    Role @relation(fields: [roles_id], references: [id])
   roles_id Int
 
   @@id([roles_id, owner_id])
+  @@map("rolesonowners")
 }
 
 model Cat {
   id   Int    @id @default(autoincrement())
   name String
+  age  Int
 
   breed    Breed @relation(fields: [breed_id], references: [id])
   breed_id Int
+
+  owner    Owner @relation(fields: [owner_id], references: [id])
+  owner_id Int
+
+  passport CatPassport?
+
+  @@map("cats")
 }
 
 model Breed {
@@ -51,21 +69,21 @@ model Breed {
   name String
 
   cats Cat[]
+
+  @@map("breeds")
 }
 
-// model CatPassport { Связь один к одному к кошке
-// id   Int    @id @unique @default(autoincrement())
-// passport_id непонятно нужно или нет
-//   cat
-// }
+model CatPassport {
+  id             Int    @id @unique @default(autoincrement())
+  passportNumber String @unique
+
+  cat   Cat @relation(fields: [catId], references: [id])
+  catId Int @unique
+
+  @@map("catpassports")
+}
 
 // enum UserActive{
 // active,
 // notActive
-//
 // }
-//
-//
-// кошка <-> хозяин  = m2m
-// коша <-> порода = one to many
-// кошка  <-> паспорт = one to one
