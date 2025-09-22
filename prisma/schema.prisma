@@ -14,31 +14,54 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Roles {
+  id          Int    @id @default(autoincrement())
+  values      String @unique
+  description String
+
+  owners RolesOnOwners[]
+}
+
+model Owner {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  roles RolesOnOwners[]
+}
+
+model RolesOnOwners {
+  owner    Owner @relation(fields: [owner_id], references: [id])
+  owner_id Int
+  roles    Roles @relation(fields: [roles_id], references: [id])
+  roles_id Int
+
+  @@id([roles_id, owner_id])
+}
+
 model Cat {
   id   Int    @id @default(autoincrement())
   name String
+
+  breed    Breed @relation(fields: [breed_id], references: [id])
+  breed_id Int
 }
 
-// model Breed {
-//   id   Int    @id @unique @default(autoincrement())
-//   name String
+model Breed {
+  id   Int    @id @unique @default(autoincrement())
+  name String
 
-//   cats Cat[]
+  cats Cat[]
+}
+
+// model CatPassport { Связь один к одному к кошке
+// id   Int    @id @unique @default(autoincrement())
+// passport_id непонятно нужно или нет
+//   cat
 // }
 
-// breed Breed
-
-//   // passport_id
-//   owner    Owner @@relation(fields: [owner_id], references: [id])
-//   owner_id Int
-// }
-
-// model Owner {
-//   id   Int    @id @default(autoincrement())
-//   name String
-// }
-
-// enum {
+// enum UserActive{
+// active,
+// notActive
 //
 // }
 //
