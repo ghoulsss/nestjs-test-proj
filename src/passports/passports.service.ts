@@ -1,26 +1,56 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePassportDto } from './dto/create-passport.dto';
 import { UpdatePassportDto } from './dto/update-passport.dto';
+import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class PassportsService {
-  create(createPassportDto: CreatePassportDto) {
-    return 'This action adds a new passport';
+  constructor(private readonly prisma: DatabaseService) {}
+
+  async create(dto: CreatePassportDto) {
+    const { passportNumber, cat_id } = dto;
+    const passport = await this.prisma.catPassport.create({
+      data: {
+        passportNumber,
+        cat_id,
+      },
+      include: {
+        cat: true,
+      },
+    });
+    return passport;
   }
 
-  findAll() {
-    return `This action returns all passports`;
+  async findAll() {
+    const passports = await this.prisma.catPassport.findMany({
+      include: {
+        cat: true,
+      },
+    });
+    return passports;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} passport`;
+  async findOne(id: number) {
+    const passport = this.prisma.catPassport.findUnique({
+      where: {
+        id: id,
+      },
+      include: {
+        cat: true,
+      },
+    });
+    return passport;
   }
 
-  update(id: number, updatePassportDto: UpdatePassportDto) {
-    return `This action updates a #${id} passport`;
+  async update(id: number, dto: UpdatePassportDto) {
+    await this.prisma.catPassport.update({ data: dto, where: { id: id } });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} passport`;
+  async remove(id: number) {
+    await this.prisma.catPassport.delete({
+      where: {
+        id: id,
+      },
+    });
   }
 }
