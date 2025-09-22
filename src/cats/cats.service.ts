@@ -8,20 +8,35 @@ export class CatsService {
   constructor(private readonly prisma: DatabaseService) {}
 
   async create(dto: CreateCatDto) {
-    const cat = await this.prisma.cat.create({ data: dto });
-    return `Cat added : ${JSON.stringify(cat)}`;
+    const { name, breed_id } = dto;
+    const cat = await this.prisma.cat.create({
+      data: {
+        name,
+        breed_id: breed_id,
+      },
+      include: {
+        breed: true,
+      },
+    });
+    return cat;
   }
 
   async findAll() {
-    const cats = await this.prisma.cat.findMany();
+    const cats = await this.prisma.cat.findMany({
+      include: {
+        breed: true,
+      },
+    });
     return cats;
-    // return `This action returns all cats`;
   }
 
   async findOne(id: number) {
-    const cat = this.prisma.cat.findMany({
+    const cat = this.prisma.cat.findUnique({
       where: {
         id: id,
+      },
+      include: {
+        breed: true,
       },
     });
     return cat;
