@@ -8,14 +8,17 @@ export class CatsService {
   constructor(private readonly prisma: DatabaseService) {}
 
   async create(dto: CreateCatDto) {
-    const { name, breed_id } = dto;
+    const { name, age, breed_id, owner_id } = dto;
     const cat = await this.prisma.cat.create({
       data: {
         name,
-        breed_id: breed_id,
+        age,
+        breed_id,
+        owner_id,
       },
       include: {
         breed: true,
+        owner: true,
       },
     });
     return cat;
@@ -25,6 +28,7 @@ export class CatsService {
     const cats = await this.prisma.cat.findMany({
       include: {
         breed: true,
+        owner: true,
       },
     });
     return cats;
@@ -37,13 +41,14 @@ export class CatsService {
       },
       include: {
         breed: true,
+        owner: true,
       },
     });
     return cat;
   }
 
-  async update(id: number, updateCatDto: UpdateCatDto) {
-    await this.prisma.cat.update({ data: updateCatDto, where: { id: id } });
+  async update(id: number, dto: UpdateCatDto) {
+    await this.prisma.cat.update({ data: dto, where: { id: id } });
   }
 
   async remove(id: number) {

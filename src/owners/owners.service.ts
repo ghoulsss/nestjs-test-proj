@@ -1,26 +1,60 @@
 import { Injectable } from '@nestjs/common';
 import { CreateOwnerDto } from './dto/create-owner.dto';
 import { UpdateOwnerDto } from './dto/update-owner.dto';
+import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class OwnersService {
-  create(createOwnerDto: CreateOwnerDto) {
-    return 'This action adds a new owner';
+  constructor(private readonly prisma: DatabaseService) {}
+
+  async create(dto: CreateOwnerDto) {
+    const { name, email, phone } = dto;
+    const owner = await this.prisma.owner.create({
+      data: {
+        name,
+        email,
+        phone,
+      },
+      include: {
+        cats: true,
+        roles: true,
+      },
+    });
+    return owner;
   }
 
-  findAll() {
-    return `This action returns all owners`;
+  async findAll() {
+    const cats = await this.prisma.owner.findMany({
+      include: {
+        roles: true,
+        cats: true,
+      },
+    });
+    return cats;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} owner`;
+  async findOne(id: number) {
+    const owner = this.prisma.owner.findUnique({
+      where: {
+        id: id,
+      },
+      include: {
+        roles: true,
+        cats: true,
+      },
+    });
+    return owner;
   }
 
-  update(id: number, updateOwnerDto: UpdateOwnerDto) {
-    return `This action updates a #${id} owner`;
+  async update(id: number, dto: UpdateOwnerDto) {
+    await this.prisma.owner.update({ data: dto, where: { id: id } });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} owner`;
+  async remove(id: number) {
+    await this.prisma.owner.delete({
+      where: {
+        id: id,
+      },
+    });
   }
 }
