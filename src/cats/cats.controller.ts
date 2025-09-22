@@ -39,14 +39,12 @@ export class CatsController {
   }
 
   @ApiOperation({ summary: 'Изменение кота' })
-  // @ApiResponse({ status: 200, type: Cat })
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCatDto: UpdateCatDto) {
     return this.catsService.update(+id, updateCatDto);
   }
 
   @ApiOperation({ summary: 'Удаление кота' })
-  // @ApiResponse({ status: 200, type: Cat })
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.catsService.remove(+id);
