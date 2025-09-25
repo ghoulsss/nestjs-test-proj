@@ -7,20 +7,21 @@ import { DatabaseService } from 'src/database/database.service';
 export class CatsService {
   constructor(private readonly prisma: DatabaseService) {}
 
-  async create(dto: CreateCatDto) {
+  async create(dto: CreateCatDto, file: Express.Multer.File) {
     const { name, age, breed_id, owner_id } = dto;
     const cat = await this.prisma.cat.create({
       data: {
-        name,
-        age,
-        breed_id,
-        owner_id,
+        name: name,
+        age: Number(age),
+        breed_id: Number(breed_id),
+        owner_id: Number(owner_id),
       },
       include: {
         breed: true,
         owner: true,
       },
     });
+    console.log(file.path);
     return cat;
   }
 

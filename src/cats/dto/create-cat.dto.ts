@@ -21,4 +21,7 @@ export class CreateCatDto {
     description: 'id хозяина',
   })
   owner_id: number;
+
+  @ApiProperty({ type: 'string', format: 'binary' })
+  file: any;
 }

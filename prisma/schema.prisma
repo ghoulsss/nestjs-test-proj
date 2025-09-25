@@ -61,6 +61,8 @@ model Cat {
 
   passport CatPassport?
 
+  imagePath String?
+
   @@map("cats")
 }
 
@@ -77,7 +79,7 @@ model CatPassport {
   id             Int    @id @unique @default(autoincrement())
   passportNumber String @unique
 
-  cat   Cat @relation(fields: [cat_id], references: [id])
+  cat    Cat @relation(fields: [cat_id], references: [id])
   cat_id Int @unique
 
   @@map("catpassports")
